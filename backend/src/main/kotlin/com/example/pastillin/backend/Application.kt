@@ -94,8 +94,9 @@ object BackendUserDatabase {
 }
 
 fun main() {
-    println("🚀 Servidor Backend Ktor iniciando en http://0.0.0.0:8080 ...")
-    embeddedServer(CIO, port = 8080, host = "0.0.0.0", module = Application::module).start(wait = true)
+    val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
+    println("🚀 Servidor Backend Ktor iniciando en http://0.0.0.0:$port ...")
+    embeddedServer(CIO, port = port, host = "0.0.0.0", module = Application::module).start(wait = true)
 }
 
 fun Application.module() {
