@@ -28,6 +28,7 @@ data class MedicationItem(
     val frequencyHours: String = "Cada 8 horas",
     val durationDays: String,
     val imageEmoji: String = "💊",
+    val photoCaptured: Boolean = true,
     val instructions: String = "Tomar con abundante agua después de los alimentos.",
     val nextDoseTime: String = "Hoy, 08:00 PM"
 )
@@ -42,9 +43,9 @@ fun MainMedicationScreen(
     var medications by remember {
         mutableStateOf(
             listOf(
-                MedicationItem("m1", "Paracetamol", "1 Pastilla (500mg)", "08:00 AM", "Cada 8 horas", "7 Días", "💊"),
-                MedicationItem("m2", "Losartán", "1 Pastilla (50mg)", "10:00 AM", "Hora fija (Diaria)", "30 Días", "⚪"),
-                MedicationItem("m3", "Omeprazol", "1 Cápsula (20mg)", "08:00 PM", "Cada 12 horas", "14 Días", "💊")
+                MedicationItem("m1", "Paracetamol", "1 Pastilla (500mg)", "08:00 AM", "Cada 8 horas", "7 Días", "💊", photoCaptured = true),
+                MedicationItem("m2", "Losartán", "1 Pastilla (50mg)", "10:00 AM", "Hora fija (Diaria)", "30 Días", "⚪", photoCaptured = true),
+                MedicationItem("m3", "Omeprazol", "1 Cápsula (20mg)", "08:00 PM", "Cada 12 horas", "14 Días", "💊", photoCaptured = true)
             )
         )
     }
@@ -72,6 +73,7 @@ fun MainMedicationScreen(
 
     var newMedDuration by remember { mutableStateOf("") }
     var selectedEmoji by remember { mutableStateOf("💊") }
+    var photoCapturedState by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -174,7 +176,7 @@ fun MainMedicationScreen(
                     )
                     Button(
                         onClick = {
-                            activeAlarmMed = medications.firstOrNull() ?: MedicationItem("demo", "Paracetamol", "1 Pastilla", "08:00 AM", "Cada 8 horas", "7 Días")
+                            activeAlarmMed = medications.firstOrNull() ?: MedicationItem("demo", "Paracetamol", "1 Pastilla", "08:00 AM", "Cada 8 horas", "7 Días", photoCaptured = true)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
                         shape = RoundedCornerShape(12.dp)
@@ -270,6 +272,15 @@ fun MainMedicationScreen(
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFF2E7D32)
                                 )
+                                if (med.photoCaptured) {
+                                    Text(
+                                        text = "📸 Foto de ayuda visual lista",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF1565C0),
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    )
+                                }
                             }
 
                             Row {
@@ -358,6 +369,39 @@ fun MainMedicationScreen(
                         label = { Text("Dosis específica (ej: 1 Pastilla de 400mg)") },
                         modifier = Modifier.fillMaxWidth()
                     )
+
+                    // PHOTO CAPTURE VISUAL AID SECTION
+                    Text("📸 Ayuda Visual (Foto de la caja/medicina):", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D47A1))
+
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = if (photoCapturedState) Color(0xFFE8F5E9) else Color(0xFFFFF8E1)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, if (photoCapturedState) Color(0xFF2E7D32) else Color(0xFFFF8F00)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (photoCapturedState) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("✅", fontSize = 20.sp)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("¡Foto capturada correctamente!", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                                }
+                                Text("Se mostrará en pantalla gigante cuando suene la alarma.", fontSize = 11.sp, color = Color(0xFF388E3C))
+                            } else {
+                                Text("Toma una foto a la caja o pastilla para que el adulto mayor la reconozca fácilmente al sonar la alarma.", fontSize = 12.sp, color = Color(0xFF5D4037))
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Button(
+                                    onClick = { photoCapturedState = true },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF8F00)),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text("📷 TOMAR / CAPTURAR FOTO AHORA", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                }
+                            }
+                        }
+                    }
 
                     // TWO OPTIONS FOR SCHEDULING
                     Text("Selecciona cómo tomar este medicamento:", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D47A1))
@@ -523,12 +567,14 @@ fun MainMedicationScreen(
                                 scheduleTime = computedTime,
                                 frequencyHours = computedFreq,
                                 durationDays = if (newMedDuration.isBlank()) "7 Días" else newMedDuration,
-                                imageEmoji = selectedEmoji
+                                imageEmoji = selectedEmoji,
+                                photoCaptured = photoCapturedState
                             )
                             medications = medications + newItem
                             newMedName = ""
                             newMedDose = ""
                             newMedDuration = ""
+                            photoCapturedState = false
                             showAddMedDialog = false
                         }
                     }
@@ -610,15 +656,31 @@ fun MainMedicationScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(120.dp)
+                                    .size(130.dp)
                                     .background(Color(0xFFE3F2FD), CircleShape)
                                     .border(4.dp, Color(0xFF1E88E5), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(text = alarmMed.imageEmoji, fontSize = 72.sp)
+                                Text(text = alarmMed.imageEmoji, fontSize = 76.sp)
                             }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            if (alarmMed.photoCaptured) {
+                                Surface(
+                                    color = Color(0xFFE8F5E9),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                ) {
+                                    Text(
+                                        text = "📸 Foto de la caja/medicina vinculada",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF2E7D32),
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             Text(
                                 text = alarmMed.name,
@@ -698,6 +760,9 @@ fun MainMedicationScreen(
                     Text("⏰ Hora programada: ${med.scheduleTime}", fontSize = 16.sp)
                     Text("🔄 Frecuencia: ${med.frequencyHours}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
                     Text("📅 Duración: ${med.durationDays}", fontSize = 16.sp)
+                    if (med.photoCaptured) {
+                        Text("📸 Ayuda visual: Foto registrada de la caja/medicina", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1565C0))
+                    }
                     Text("📝 Instrucciones: ${med.instructions}", fontSize = 16.sp)
                     HorizontalDivider()
                     Text("🕒 Próxima Dosis: ${med.nextDoseTime}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
