@@ -1,0 +1,10 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "./gradlew :backend:installDist -x test --no-daemon"
+  },
+  "deploy": {
+    "startCommand": "backend/build/install/backend/bin/backend"
+  }
+}
