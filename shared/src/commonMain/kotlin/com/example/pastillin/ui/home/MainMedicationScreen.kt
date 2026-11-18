@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.pastillin.data.datasource.LocalUserDataSource
 import com.example.pastillin.domain.model.User
 
 data class MedicationItem(
@@ -39,15 +40,9 @@ fun MainMedicationScreen(
     user: User,
     onLogout: () -> Unit
 ) {
-    // Registered medications
+    // Registered medications initialized from persistent DataSource
     var medications by remember {
-        mutableStateOf(
-            listOf(
-                MedicationItem("m1", "Paracetamol", "1 Pastilla (500mg)", "08:00 AM", "Cada 8 horas", "7 Días", "💊", photoCaptured = true),
-                MedicationItem("m2", "Losartán", "1 Pastilla (50mg)", "10:00 AM", "Hora fija (Diaria)", "30 Días", "⚪", photoCaptured = true),
-                MedicationItem("m3", "Omeprazol", "1 Cápsula (20mg)", "08:00 PM", "Cada 12 horas", "14 Días", "💊", photoCaptured = true)
-            )
-        )
+        mutableStateOf(LocalUserDataSource.getMedications())
     }
 
     var showAddMedDialog by remember { mutableStateOf(false) }
@@ -80,7 +75,7 @@ fun MainMedicationScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("💊 Pastillíno", fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                        Text("💊 Pastillín", fontWeight = FontWeight.Bold, fontSize = 22.sp)
                         Text("Hola, ${user.fullName}", fontSize = 13.sp)
                     }
                 },
@@ -322,7 +317,8 @@ fun MainMedicationScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        medications = medications.filter { it.id != med.id }
+                        LocalUserDataSource.deleteMedication(med.id)
+                        medications = LocalUserDataSource.getMedications()
                         medicationToDelete = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
@@ -561,7 +557,7 @@ fun MainMedicationScreen(
                             val computedFreq = if (newMedScheduleMode == 0) "Hora fija (Diaria)" else "Cada $newIntervalHours horas"
 
                             val newItem = MedicationItem(
-                                id = "m_${medications.size + 1}",
+                                id = "m_${LocalUserDataSource.getMedications().size + 1}",
                                 name = newMedName,
                                 dose = newMedDose,
                                 scheduleTime = computedTime,
@@ -570,7 +566,9 @@ fun MainMedicationScreen(
                                 imageEmoji = selectedEmoji,
                                 photoCaptured = photoCapturedState
                             )
-                            medications = medications + newItem
+                            LocalUserDataSource.addMedication(newItem)
+                            medications = LocalUserDataSource.getMedications()
+
                             newMedName = ""
                             newMedDose = ""
                             newMedDuration = ""
