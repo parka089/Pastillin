@@ -46,6 +46,7 @@ fun MainMedicationScreen(
     }
 
     var showAddMedDialog by remember { mutableStateOf(false) }
+    var showCameraDialog by remember { mutableStateOf(false) }
     var activeAlarmMed by remember { mutableStateOf<MedicationItem?>(null) }
     var detailModalMed by remember { mutableStateOf<MedicationItem?>(null) }
     var medicationToDelete by remember { mutableStateOf<MedicationItem?>(null) }
@@ -269,7 +270,7 @@ fun MainMedicationScreen(
                                 )
                                 if (med.photoCaptured) {
                                     Text(
-                                        text = "📸 Foto de ayuda visual lista",
+                                        text = "📸 Foto de la caja vinculada",
                                         fontSize = 12.sp,
                                         color = Color(0xFF1565C0),
                                         fontWeight = FontWeight.Bold,
@@ -292,6 +293,84 @@ fun MainMedicationScreen(
             }
 
             Spacer(modifier = Modifier.height(70.dp))
+        }
+    }
+
+    // --- CAMERA CAPTURE DIALOG ---
+    if (showCameraDialog) {
+        Dialog(
+            onDismissRequest = { showCameraDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.95f))
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "📷 Cámara de Medicamentos",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
+
+                    // Simulated Camera Viewfinder
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(360.dp)
+                            .border(3.dp, Color(0xFF00E676), RoundedCornerShape(20.dp))
+                            .background(Color(0xFF1A1A1A)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("📸", fontSize = 64.sp)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Enfoca la caja o pastilla de '${newMedName.ifBlank { "Medicamento" }}'",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Text(
+                                text = "El visor se vinculará directamente a las alarmas",
+                                color = Color(0xFFAEBAC1),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+
+                    // Shutter Trigger Button
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(bottom = 30.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                photoCapturedState = true
+                                showCameraDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E676)),
+                            shape = CircleShape,
+                            modifier = Modifier.size(80.dp)
+                        ) {
+                            Text("📸", fontSize = 32.sp)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("TOCAR PARA CAPTURAR", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
         }
     }
 
@@ -366,7 +445,7 @@ fun MainMedicationScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // PHOTO CAPTURE VISUAL AID SECTION
+                    // PHOTO CAPTURE VISUAL AID SECTION WITH LIVE CAMERA TRIGGER
                     Text("📸 Ayuda Visual (Foto de la caja/medicina):", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D47A1))
 
                     Card(
@@ -382,18 +461,18 @@ fun MainMedicationScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text("✅", fontSize = 20.sp)
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("¡Foto capturada correctamente!", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                                    Text("¡Foto capturada y vinculada!", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
                                 }
-                                Text("Se mostrará en pantalla gigante cuando suene la alarma.", fontSize = 11.sp, color = Color(0xFF388E3C))
+                                Text("Se mostrará en la alarma cuando suene.", fontSize = 11.sp, color = Color(0xFF388E3C))
                             } else {
-                                Text("Toma una foto a la caja o pastilla para que el adulto mayor la reconozca fácilmente al sonar la alarma.", fontSize = 12.sp, color = Color(0xFF5D4037))
+                                Text("Abre la cámara para tomar la foto del medicamento:", fontSize = 12.sp, color = Color(0xFF5D4037))
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
-                                    onClick = { photoCapturedState = true },
+                                    onClick = { showCameraDialog = true },
                                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF8F00)),
                                     shape = RoundedCornerShape(10.dp)
                                 ) {
-                                    Text("📷 TOMAR / CAPTURAR FOTO AHORA", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text("📷 ABRIR CÁMARA Y TOMAR FOTO", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
                                 }
                             }
                         }
