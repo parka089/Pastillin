@@ -80,7 +80,7 @@ fun MainMedicationScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("💊 Pastillín", fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                        Text("💊 Pastillíno", fontWeight = FontWeight.Bold, fontSize = 22.sp)
                         Text("Hola, ${user.fullName}", fontSize = 13.sp)
                     }
                 },
