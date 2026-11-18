@@ -159,7 +159,7 @@ fun MainMedicationScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "🚨 Probador de Alarma con Teléfono Bloqueado",
+                        text = "Ricardo Lopez Estrada",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
                         color = Color(0xFFC62828)
