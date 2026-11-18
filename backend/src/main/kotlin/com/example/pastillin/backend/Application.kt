@@ -14,6 +14,7 @@ import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
@@ -31,6 +32,20 @@ data class ServerUser(
     val allergies: String = "",
     val medicalConditions: String = "",
     val emergencyContact: String = ""
+)
+
+@Serializable
+data class ServerMedicationDto(
+    val id: String,
+    val name: String,
+    val dose: String,
+    val scheduleTime: String,
+    val frequencyHours: String = "Cada 8 horas",
+    val durationDays: String = "7 Días",
+    val imageEmoji: String = "💊",
+    val photoCaptured: Boolean = true,
+    val instructions: String = "Tomar con abundante agua después de los alimentos.",
+    val nextDoseTime: String = "Hoy, 08:00 PM"
 )
 
 @Serializable
@@ -59,7 +74,7 @@ data class ServerAuthResponse(
     val errorMessage: String? = null
 )
 
-// In-Memory Predefined JSON User Database
+// In-Memory & JSON Server Database
 object BackendUserDatabase {
     val usersJsonContent = """
         [
@@ -73,17 +88,6 @@ object BackendUserDatabase {
                 "allergies": "Penicilina, Sulfa",
                 "medicalConditions": "Hipertensión Arterial, Diabetes Tipo 2",
                 "emergencyContact": "555-0192 (Hijo - Carlos)"
-            },
-            {
-                "id": "u2",
-                "username": "maria",
-                "passwordHash": "maria123",
-                "fullName": "Doña María López",
-                "age": "68",
-                "bloodType": "A+",
-                "allergies": "Aspirina",
-                "medicalConditions": "Artritis Reumatoide",
-                "emergencyContact": "555-0482 (Hija - Ana)"
             }
         ]
     """.trimIndent()
@@ -91,6 +95,12 @@ object BackendUserDatabase {
     private val jsonConfig = Json { ignoreUnknownKeys = true }
 
     val usersList: MutableList<ServerUser> = jsonConfig.decodeFromString<List<ServerUser>>(usersJsonContent).toMutableList()
+
+    val medicationsList: MutableList<ServerMedicationDto> = mutableListOf(
+        ServerMedicationDto("m1", "Paracetamol", "1 Pastilla (500mg)", "08:00 AM", "Cada 8 horas", "7 Días", "💊", photoCaptured = true),
+        ServerMedicationDto("m2", "Losartán", "1 Pastilla (50mg)", "10:00 AM", "Hora fija (Diaria)", "30 Días", "⚪", photoCaptured = true),
+        ServerMedicationDto("m3", "Omeprazol", "1 Cápsula (20mg)", "08:00 PM", "Cada 12 horas", "14 Días", "💊", photoCaptured = true)
+    )
 }
 
 fun main() {
@@ -114,6 +124,7 @@ fun Application.module() {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Delete)
     }
 
     routing {
@@ -187,6 +198,27 @@ fun Application.module() {
                         user = newUser
                     )
                 )
+            }
+        }
+
+        // --- ENDPOINTS PARA GUARDAR Y ELIMINAR MEDICAMENTOS (PERSISTENCIA KTOR) ---
+        get("/api/v1/medications") {
+            call.respond(BackendUserDatabase.medicationsList)
+        }
+
+        post("/api/v1/medications") {
+            val med = call.receive<ServerMedicationDto>()
+            BackendUserDatabase.medicationsList.add(med)
+            call.respond(HttpStatusCode.Created, med)
+        }
+
+        delete("/api/v1/medications/{id}") {
+            val idParam = call.parameters["id"]
+            if (idParam != null) {
+                BackendUserDatabase.medicationsList.removeAll { it.id == idParam }
+                call.respond(HttpStatusCode.OK, mapOf("status" to "deleted", "id" to idParam))
+            } else {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ID no especificado"))
             }
         }
     }

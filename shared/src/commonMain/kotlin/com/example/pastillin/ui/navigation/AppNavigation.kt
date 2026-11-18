@@ -18,7 +18,7 @@ fun AppNavigation(
         AuthScreen(
             authViewModel = authViewModel,
             onAuthSuccess = {
-                // User authenticated or account created successfully
+                // Navigates automatically to MainMedicationScreen when currentUser is set
             }
         )
     } else {

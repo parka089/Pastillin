@@ -17,17 +17,6 @@ object LocalUserDataSource {
                 "allergies": "Penicilina, Sulfa",
                 "medicalConditions": "Hipertensión Arterial, Diabetes Tipo 2",
                 "emergencyContact": "555-0192 (Hijo - Carlos)"
-            },
-            {
-                "id": "u2",
-                "username": "maria",
-                "passwordHash": "maria123",
-                "fullName": "Doña María López",
-                "age": "68",
-                "bloodType": "A+",
-                "allergies": "Aspirina",
-                "medicalConditions": "Artritis Reumatoide",
-                "emergencyContact": "555-0482 (Hija - Ana)"
             }
         ]
     """.trimIndent()

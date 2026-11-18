@@ -75,7 +75,7 @@ fun AuthScreen(
                     color = Color(0xFF0D47A1)
                 )
                 Text(
-                    text = "Gestión de Medicamentos y Registro Clínico",
+                    text = "Gestión de Medicamentos (Única Cuenta)",
                     fontSize = 14.sp,
                     color = Color(0xFF546E7A)
                 )
@@ -166,35 +166,21 @@ fun AuthScreen(
                     HorizontalDivider()
 
                     Text(
-                        text = "Usuarios Demo Predefinidos (JSON Ktor):",
+                        text = "Usuario Registrado (Ktor JSON Backend):",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF546E7A)
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        FilterChip(
-                            selected = (loginUser == "roberto"),
-                            onClick = {
-                                loginUser = "roberto"
-                                loginPass = "roberto123"
-                                authViewModel.clearError()
-                            },
-                            label = { Text("👴 Don Roberto") }
-                        )
-                        FilterChip(
-                            selected = (loginUser == "maria"),
-                            onClick = {
-                                loginUser = "maria"
-                                loginPass = "maria123"
-                                authViewModel.clearError()
-                            },
-                            label = { Text("👵 Doña María") }
-                        )
-                    }
+                    FilterChip(
+                        selected = (loginUser == "roberto"),
+                        onClick = {
+                            loginUser = "roberto"
+                            loginPass = "roberto123"
+                            authViewModel.clearError()
+                        },
+                        label = { Text("👴 Don Roberto (Único Usuario)") }
+                    )
 
                 } else {
                     // --- TAB 2: CREAR CUENTA (DATOS CLÍNICOS) ---
@@ -297,7 +283,7 @@ fun AuthScreen(
                             )
                         },
                         enabled = uiState !is AuthUiState.Loading,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)), // Green button for account creation
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
