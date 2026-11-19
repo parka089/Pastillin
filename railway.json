@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "chmod +x ./gradlew && ./gradlew installDist -x test --no-daemon"
+  },
+  "deploy": {
+    "startCommand": "./build/install/Pastillin-Backend/bin/Pastillin-Backend",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
