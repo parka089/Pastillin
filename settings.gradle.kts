@@ -1,4 +1,4 @@
-rootProject.name = "Pastillin"
+rootProject.name = "Pastillin-Backend"
 
 pluginManagement {
     repositories {
