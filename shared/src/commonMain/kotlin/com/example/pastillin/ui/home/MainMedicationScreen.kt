@@ -159,7 +159,12 @@ fun MainMedicationScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
+
+
+
+
                         text = " Examen Recuperacion ",
+
 
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
