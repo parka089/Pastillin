@@ -159,7 +159,9 @@ fun MainMedicationScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "PRUEBA BIEN EN RICARDO ",
+                 text = "PRUEBA BIEN EN RICARDO ",
+
+
 
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
